@@ -29,4 +29,6 @@
     <entry key='atrack.custom'>true</entry>
     <entry key='intellitrac.port'>6037</entry>
 
+    <entry key='micodus.port'>6013</entry>
+
 </properties>
