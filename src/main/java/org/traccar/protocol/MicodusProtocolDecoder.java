@@ -168,7 +168,9 @@ public class MicodusProtocolDecoder extends BaseProtocolDecoder {
         position.set("accAlarm", buf.readUnsignedByte());
         position.set("network", buf.readUnsignedByte());
         position.set(Position.KEY_RSSI, buf.readUnsignedByte());
-        position.set(Position.KEY_SATELLITES, buf.readUnsignedByte());
+        int satellites = buf.readUnsignedByte();
+        position.set(Position.KEY_SATELLITES, satellites & 0x0f);
+        position.set("satellitesBeidou", satellites >> 4);
 
         position.set(Position.KEY_ODOMETER, buf.readUnsignedInt());
 

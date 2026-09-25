@@ -15,5 +15,9 @@ public class MicodusProtocolDecoderTest extends ProtocolTest {
 
         verifyPosition(decoder, binary(
                 "2478010105171322240906202928064400106282727E000000FFFFFBFFFF00140C0000000101CC0500000000007C0000000002"));
+
+        // captured from a real MV730G unit (Vivo M2M SIM, no GPS fix yet)
+        verifyPosition(decoder, binary(
+                "24734001983020381625092600000000000000000000000000f7e7fbffff04140b0000000001cc02ff00000000000000000000"));
     }
 }
