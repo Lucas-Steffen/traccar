@@ -1,10 +1,12 @@
 package org.traccar.protocol;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.Channel;
 import org.traccar.BaseProtocolDecoder;
 import org.traccar.NetworkMessage;
 import org.traccar.Protocol;
+import org.traccar.helper.BcdUtil;
 import org.traccar.helper.BitUtil;
 import org.traccar.helper.DateBuilder;
 import org.traccar.helper.Parser;
@@ -122,16 +124,81 @@ public class MicodusProtocolDecoder extends BaseProtocolDecoder {
         return position;
     }
 
+    private Position decodeBinary(ByteBuf buf, Channel channel, SocketAddress remoteAddress) {
+
+        buf.readByte(); // marker
+
+        String id = ByteBufUtil.hexDump(buf.readSlice(5));
+
+        DeviceSession deviceSession = getDeviceSession(channel, remoteAddress, id);
+        if (deviceSession == null) {
+            return null;
+        }
+
+        Position position = new Position(getProtocolName());
+        position.setDeviceId(deviceSession.getDeviceId());
+
+        DateBuilder dateBuilder = new DateBuilder()
+                .setHour(BcdUtil.readInteger(buf, 2))
+                .setMinute(BcdUtil.readInteger(buf, 2))
+                .setSecond(BcdUtil.readInteger(buf, 2))
+                .setDay(BcdUtil.readInteger(buf, 2))
+                .setMonth(BcdUtil.readInteger(buf, 2))
+                .setYear(BcdUtil.readInteger(buf, 2));
+        position.setTime(dateBuilder.getDate());
+
+        int latitudeRaw = BcdUtil.readInteger(buf, 8);
+        double latitude = latitudeRaw / 1000000 + (latitudeRaw % 1000000) / 10000.0 / 60;
+
+        buf.readByte(); // reserved
+
+        int longitudeRaw = BcdUtil.readInteger(buf, 9);
+        double longitude = longitudeRaw / 1000000 + (longitudeRaw % 1000000) / 10000.0 / 60;
+
+        int flags = buf.readByte() & 0x0f;
+        position.setValid(BitUtil.check(flags, 1));
+        position.setLatitude(BitUtil.check(flags, 2) ? latitude : -latitude);
+        position.setLongitude(BitUtil.check(flags, 3) ? longitude : -longitude);
+
+        position.setSpeed(BcdUtil.readInteger(buf, 3));
+        position.setCourse((buf.readUnsignedByte() & 0x0f) * 100 + BcdUtil.readInteger(buf, 2));
+
+        processStatus(position, buf.readUnsignedInt());
+
+        position.set("accAlarm", buf.readUnsignedByte());
+        position.set("network", buf.readUnsignedByte());
+        position.set(Position.KEY_RSSI, buf.readUnsignedByte());
+        position.set(Position.KEY_SATELLITES, buf.readUnsignedByte());
+
+        position.set(Position.KEY_ODOMETER, buf.readUnsignedInt());
+
+        position.set("country", buf.readUnsignedShort());
+
+        position.set("satellitesGlonass", buf.readUnsignedByte());
+
+        buf.skipBytes(4); // reserved
+
+        position.set(Position.KEY_POWER, buf.readUnsignedShort() * 0.1);
+
+        buf.skipBytes(4); // reserved
+
+        position.set(Position.KEY_INDEX, buf.readUnsignedByte());
+
+        return position;
+    }
+
     @Override
     protected Object decode(
             Channel channel, SocketAddress remoteAddress, Object msg) throws Exception {
 
         ByteBuf buf = (ByteBuf) msg;
-        String marker = buf.toString(0, 1, StandardCharsets.US_ASCII);
+        int marker = buf.getUnsignedByte(buf.readerIndex());
 
-        if (marker.equals("*")) {
+        if (marker == '*') {
             String sentence = buf.toString(StandardCharsets.US_ASCII).trim();
             return decodeText(sentence, channel, remoteAddress);
+        } else if (marker == 0x24) {
+            return decodeBinary(buf, channel, remoteAddress);
         }
 
         return null;
