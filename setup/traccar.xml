@@ -11,5 +11,6 @@
 
     <entry key='micodus.port'>6013</entry>
     <entry key='filter.zero'>true</entry>
+    <entry key='logger.console'>true</entry>
 
 </properties>
