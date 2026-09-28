@@ -9,4 +9,7 @@
     <entry key='database.user'>sa</entry>
     <entry key='database.password' />
 
+    <entry key='micodus.port'>6013</entry>
+    <entry key='filter.zero'>true</entry>
+
 </properties>

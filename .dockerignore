@@ -1,0 +1,17 @@
+.git
+.gradle
+.idea
+.vscode
+target
+build
+out
+bin
+*.iml
+.DS_Store
+.classpath
+.project
+.settings
+nbactions.xml
+node_modules
+Claude outputs
+traccar-web
