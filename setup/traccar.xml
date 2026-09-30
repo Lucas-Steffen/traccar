@@ -10,6 +10,8 @@
     <entry key='database.password' />
 
     <entry key='micodus.port'>6013</entry>
+    <entry key='jt808.port'>6014</entry>
+
     <entry key='filter.zero'>true</entry>
     <entry key='logger.console'>true</entry>
 

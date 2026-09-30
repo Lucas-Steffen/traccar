@@ -32,5 +32,6 @@
     <entry key='intellitrac.port'>6037</entry>
 
     <entry key='micodus.port'>6013</entry>
+    <entry key='jt808.port'>6014</entry>
 
 </properties>
