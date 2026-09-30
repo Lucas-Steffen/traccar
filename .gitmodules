@@ -1,5 +1,5 @@
 [submodule "traccar-web"]
 	path = traccar-web
-	url = https://github.com/Lucas-Steffen/traccar-web.git
-	branch = master
+	url = https://github.com/VFPAR/traccar-web.git
+	branch = feat/micodus-integration
 	ignore = all

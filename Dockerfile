@@ -9,7 +9,7 @@
 # whether the build platform initializes git submodules recursively.
 # Override the build args if you fork/rename traccar-web again.
 
-ARG WEB_REPO=https://github.com/Lucas-Steffen/traccar-web.git
+ARG WEB_REPO=https://github.com/VFPAR/traccar-web.git
 ARG WEB_REF=feat/micodus-integration
 
 # ---- Stage 1: build the Java server (this repo) ----
