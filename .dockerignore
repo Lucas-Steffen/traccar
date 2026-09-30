@@ -13,7 +13,8 @@ bin
 .settings
 nbactions.xml
 node_modules
-Claude outputs
 traccar-web
 
 docker-compose.local.yml
+docker/web-redirect/node_modules
+docker/web-redirect/dist
